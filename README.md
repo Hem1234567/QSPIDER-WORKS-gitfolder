@@ -1,1 +1,0 @@
-# QSPIDER-WORKS-gitfolder

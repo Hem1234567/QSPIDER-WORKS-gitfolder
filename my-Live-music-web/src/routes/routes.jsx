@@ -4,6 +4,8 @@ import Layout from "../Layout";
 import Home from "../pages/Home";
 import Login from "../auth/login";
 import Register from "../auth/register";
+import ResetPassword from "../auth/ResetPassword";
+import MyProfile from "../components/UserProfile/MyProfile";
 
 
 
@@ -21,11 +23,19 @@ let myRoutes = createBrowserRouter([
       },
       {
         path: "/auth/login",
-        element: <Login/>,
+        element: <Login />,
       },
       {
         path: "/auth/register",
-        element: <Register/>,
+        element: <Register />,
+      },
+      {
+        path: "/auth/ResetPassword",
+        element: <ResetPassword />,
+      },
+      {
+        path: "/user/profile",
+        element:<MyProfile/>
       },
       {
         path: "*",

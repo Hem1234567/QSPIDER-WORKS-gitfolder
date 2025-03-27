@@ -1,12 +1,15 @@
 import {
   signInWithEmailAndPassword,
   sendEmailVerification,
+  GoogleAuthProvider,
+  signInWithPopup,
 } from "firebase/auth";
 import React, { useState } from "react";
 import toast from "react-hot-toast";
 import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
 import { NavLink, useNavigate } from "react-router-dom";
 import { __AUTH } from "../backend/Firebaseconfig.js";
+import { FaGoogle } from "react-icons/fa";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -24,6 +27,7 @@ const Login = () => {
     setUserData({ ...userData, [name]: value });
   };
 
+  
   const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -40,14 +44,30 @@ const Login = () => {
         toast.success("Login successful!");
         navigate("/");
       } else {
-        
         await sendEmailVerification(user);
-        toast.error("Email not verified! Please check your inbox.");
+        toast.error(
+          "Email not verified! Verification email sent. Please check your inbox."
+        );
       }
     } catch (error) {
-      toast.error(error.code.slice(5));
+      toast.error(error.code.replace("auth/", ""));
     }
     setIsLoading(false);
+  };
+
+ 
+  const handleGoogleLogin = async () => {
+    const provider = new GoogleAuthProvider();
+
+    try {
+      const result = await signInWithPopup(__AUTH, provider);
+      const user = result.user;
+
+      toast.success(`Welcome, ${user.displayName || "User"}!`);
+      navigate("/");
+    } catch (error) {
+      toast.error("Google Sign-In failed. Try again.");
+    }
   };
 
   return (
@@ -104,14 +124,11 @@ const Login = () => {
             </NavLink>
           </div>
           <div className="flex justify-between mt-2 text-sm">
-            <NavLink
-              to="/forgot-password"
-              className="hover:underline hover:text-purple-400 text-gray-200"
-            >
+            <NavLink className="text-gray-200 cursor-pointer">
               Forgotten Password
             </NavLink>
             <NavLink
-              to="/reset-password"
+              to="/auth/ResetPassword"
               className="hover:underline hover:text-purple-400 text-gray-200"
             >
               Reset Password
@@ -120,7 +137,7 @@ const Login = () => {
           <div>
             <button
               type="submit"
-              className={`w-full py-2 mt-4 text-white bg-purple-600 rounded hover:bg-purple-700 ${
+              className={`w-full py-2 mt-4 text-white bg-purple-700 rounded hover:bg-purple-600 ${
                 isLoading ? "opacity-50 cursor-not-allowed" : ""
               }`}
               disabled={isLoading}
@@ -128,13 +145,19 @@ const Login = () => {
               {isLoading ? "Logging in..." : "Login"}
             </button>
           </div>
-          <div className="mt-4 text-center text-gray-300">
-            <NavLink
-              to="/auth/phone-login"
-              className="text-sm flex items-center justify-center hover:underline"
+
+          {}
+          <div className="mt-4 flex justify-center items-center text-gray-300">
+            <button
+              onClick={handleGoogleLogin}
+              type="button"
+              className="w-full max-w-xs font-bold shadow-sm rounded-lg py-3 bg-indigo-100 text-gray-800 flex items-center justify-center transition-all duration-300 ease-in-out focus:outline-none hover:shadow focus:shadow-sm focus:shadow-outline"
             >
-              Login with phone number
-            </NavLink>
+              <div className="bg-white p-2 rounded-full">
+                <FaGoogle className="text-gray-800" />
+              </div>
+              <span className="ml-4">Sign In with Google</span>
+            </button>
           </div>
         </form>
       </article>
