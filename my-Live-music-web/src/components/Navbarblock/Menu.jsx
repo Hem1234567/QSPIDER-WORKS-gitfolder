@@ -13,7 +13,7 @@ const Menu = () => {
   const handleLogout = async () => {
     try {
       await signOut(__AUTH);
-      toast.success("Logout successfully")
+      toast.success("Logout successfully");
       window.localStorage.removeItem("UserToken");
       navigate("/");
     } catch (error) {
@@ -28,29 +28,40 @@ const Menu = () => {
 
   return (
     <div className="menu flex justify-end mr-[100px] items-center basis-[25%]">
-      <ul className="flex gap-7 text-[16px]">
+      <ul className="flex gap-7 text-[16px] items-center">
         <li>
           <NavLink to="/" className={linkStyle}>
             Home
           </NavLink>
         </li>
+
         {authUser ? (
           <>
+            {/* Display Username and Profile Picture */}
             <li>
-              <NavLink to="/user/profile" className={linkStyle}>
-                Profile
-              </NavLink>
+              <button className="flex items-center gap-2 px-3 py-2 rounded-md font-semibold text-white border border-transparent hover:bg-blue-800 transition-all">
+                <NavLink to="/user/profile" className="flex items-center gap-2">
+                  <span>{authUser.displayName || "User"}</span>
+                  <img
+                    src={
+                      authUser.photoURL ||
+                      "https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-260nw-1677509740.jpg"
+                    }
+                    alt="User Avatar"
+                    className="w-8 h-8 rounded-full border-2 border-white object-cover"
+                  />
+                </NavLink>
+              </button>
             </li>
+
+            {/* Logout Button */}
             <li>
               <button
                 onClick={handleLogout}
-                className="px-3 py-2 rounded-md font-semibold hover:bg-red-600 cursor-pointer text-white border border-transparent flex"
-                style={{ height: "40px" }}
+                className="px-3 py-2 rounded-md font-semibold hover:bg-red-600 cursor-pointer text-white border border-transparent flex items-center"
               >
                 <span>Logout</span>
-                <span className="mt-1 ml-1">
-                  <FiLogOut />
-                </span>
+                <FiLogOut className="ml-2 text-lg" />
               </button>
             </li>
           </>
