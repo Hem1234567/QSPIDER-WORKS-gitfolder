@@ -5,7 +5,7 @@ import Home from "../pages/Home";
 import Login from "../auth/login";
 import Register from "../auth/register";
 import ResetPassword from "../auth/ResetPassword";
-import MyProfile from "../components/UserProfile/MyProfile";
+import Profilecontainer from "../components/UserProfile/Profilecontainer";
 
 
 
@@ -35,7 +35,7 @@ let myRoutes = createBrowserRouter([
       },
       {
         path: "/user/profile",
-        element:<MyProfile/>
+        element:<Profilecontainer/>,
       },
       {
         path: "*",

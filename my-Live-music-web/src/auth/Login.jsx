@@ -10,13 +10,11 @@ import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
 import { NavLink, useNavigate } from "react-router-dom";
 import { __AUTH } from "../backend/Firebaseconfig.js";
 import { FaGoogle } from "react-icons/fa";
+import Spinner from "../Helper/Spinner.jsx";
 
 const Login = () => {
   const navigate = useNavigate();
-  const [userData, setUserData] = useState({
-    email: "",
-    password: "",
-  });
+  const [userData, setUserData] = useState({ email: "", password: "" });
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -27,7 +25,6 @@ const Login = () => {
     setUserData({ ...userData, [name]: value });
   };
 
-  
   const handleLogin = async (e) => {
     e.preventDefault();
     setIsLoading(true);
@@ -55,14 +52,11 @@ const Login = () => {
     setIsLoading(false);
   };
 
- 
   const handleGoogleLogin = async () => {
     const provider = new GoogleAuthProvider();
-
     try {
       const result = await signInWithPopup(__AUTH, provider);
       const user = result.user;
-
       toast.success(`Welcome, ${user.displayName || "User"}!`);
       navigate("/");
     } catch (error) {
@@ -71,14 +65,23 @@ const Login = () => {
   };
 
   return (
-    <section className="flex items-center justify-center min-h-screen bg-gray-900">
-      <article className="w-full max-w-md p-8 bg-gray-800 rounded-lg shadow-lg border-b-2 border-amber-50">
+    <section className="flex items-center justify-center min-h-screen bg-gray-900 relative">
+      {/* Full-Screen Loading Overlay */}
+      {isLoading && (
+        <div className="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
+          <Spinner />
+        </div>
+      )}
+
+      {/* Login Form */}
+      <article className="w-full max-w-md p-8 bg-gray-800 rounded-lg shadow-lg border-b-2 border-amber-50 relative z-10">
         <header>
           <h2 className="text-2xl font-semibold text-center text-purple-400 mb-6">
             Login with Email
           </h2>
         </header>
         <form onSubmit={handleLogin}>
+          {/* Email Input */}
           <div>
             <label className="block text-gray-300">Email</label>
             <input
@@ -91,6 +94,8 @@ const Login = () => {
               required
             />
           </div>
+
+          {/* Password Input with Toggle */}
           <div className="relative">
             <label className="block mt-4 font-semibold text-gray-300">
               Password
@@ -107,13 +112,20 @@ const Login = () => {
             <span
               onClick={() => setPasswordVisible(!passwordVisible)}
               className="text-gray-200 absolute top-9 right-3 cursor-pointer"
+              aria-label={passwordVisible ? "Hide password" : "Show password"}
             >
               {passwordVisible ? <IoEyeOutline /> : <IoEyeOffOutline />}
             </span>
           </div>
+
+          {/* Remember Me & Register Link */}
           <div className="flex items-center justify-between mt-4 text-gray-300">
             <label className="flex items-center">
-              <input type="checkbox" className="mr-2 accent-purple-500" />{" "}
+              <input
+                type="checkbox"
+                name="rememberMe"
+                className="mr-2 accent-purple-500"
+              />{" "}
               Remember Me
             </label>
             <NavLink
@@ -123,17 +135,24 @@ const Login = () => {
               Don't have an account?
             </NavLink>
           </div>
+
+          {/* Reset Password */}
           <div className="flex justify-between mt-2 text-sm">
-            <NavLink className="text-gray-200 cursor-pointer">
-              Forgotten Password
+            <NavLink
+              to="/auth/forgot-password"
+              className="hover:underline hover:text-purple-400 text-gray-200"
+            >
+              Forgotten Password?
             </NavLink>
             <NavLink
-              to="/auth/ResetPassword"
+              to="/auth/reset-password"
               className="hover:underline hover:text-purple-400 text-gray-200"
             >
               Reset Password
             </NavLink>
           </div>
+
+          {/* Login Button */}
           <div>
             <button
               type="submit"
@@ -142,11 +161,11 @@ const Login = () => {
               }`}
               disabled={isLoading}
             >
-              {isLoading ? "Logging in..." : "Login"}
+              Login
             </button>
           </div>
 
-          {}
+          {/* Google Sign-In Button */}
           <div className="mt-4 flex justify-center items-center text-gray-300">
             <button
               onClick={handleGoogleLogin}

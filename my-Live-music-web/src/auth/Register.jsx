@@ -12,14 +12,13 @@ const Register = () => {
     email: "",
     password: "",
     confirmPassword: "",
-    photoURL: "", 
   });
 
   const [showPassword1, setShowPassword1] = useState(false);
   const [showPassword2, setShowPassword2] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { username, email, password, confirmPassword, photoURL } = userData;
+  const { username, email, password, confirmPassword } = userData;
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -37,29 +36,26 @@ const Register = () => {
     }
 
     try {
-      
       const registeredUser = await createUserWithEmailAndPassword(
         __AUTH,
         email,
         password
       );
 
-      
       await updateProfile(registeredUser.user, {
         displayName: username,
-        photoURL: photoURL || "https://via.placeholder.com/150", 
+        photoURL:
+          "https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-260nw-1677509740.jpg", // Default profile picture
       });
 
       console.log("User Updated:", registeredUser.user);
       toast.success("Registered successfully!");
 
-      
       setUserData({
         username: "",
         email: "",
         password: "",
         confirmPassword: "",
-        photoURL: "",
       });
 
       navigate("/auth/login");
@@ -78,7 +74,6 @@ const Register = () => {
           </h1>
         </header>
         <form onSubmit={handleSubmit}>
-          
           <div>
             <label className="block font-semibold text-gray-300">
               Username
@@ -94,7 +89,6 @@ const Register = () => {
             />
           </div>
 
-          
           <div>
             <label className="block mt-4 font-semibold text-gray-300">
               Email
@@ -110,22 +104,6 @@ const Register = () => {
             />
           </div>
 
-          
-          <div>
-            <label className="block mt-4 font-semibold text-gray-300">
-              Profile Picture URL
-            </label>
-            <input
-              type="text"
-              placeholder="Enter your profile picture URL"
-              className="w-full p-2 mt-1 text-gray-300 rounded bg-gray-800 border border-gray-500 focus:outline-none"
-              name="photoURL"
-              value={photoURL}
-              onChange={handleInputChange}
-            />
-          </div>
-
-          
           <div className="relative">
             <label className="block mt-4 font-semibold text-gray-300">
               Password
@@ -147,7 +125,6 @@ const Register = () => {
             </span>
           </div>
 
-          
           <div className="relative">
             <label className="block mt-4 font-semibold text-gray-300">
               Confirm Password
@@ -169,7 +146,6 @@ const Register = () => {
             </span>
           </div>
 
-          
           <div className="flex justify-between items-center mt-3 text-gray-300 text-sm">
             <span className="font-semibold">Already have an account?</span>
             <NavLink
@@ -180,7 +156,6 @@ const Register = () => {
             </NavLink>
           </div>
 
-          
           <div>
             <button
               type="submit"
