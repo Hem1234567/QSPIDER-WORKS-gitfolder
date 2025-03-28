@@ -1,7 +1,12 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import toast from "react-hot-toast";
+import { AuthUserContext } from "../../Context/AuthContextApi";
+import { updateProfile } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
 
 const UploadProfilePhoto = () => {
+  let { authUser } = useContext(AuthUserContext);
+  let navigate = useNavigate();
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
 
@@ -14,20 +19,48 @@ const UploadProfilePhoto = () => {
     }
   };
 
-  // Handle photo upload (dummy function, you can replace it with your actual upload logic)
-  const handleUpload = () => {
-    if (file) {
-      // Logic to upload the photo (e.g., call API, upload to cloud storage, etc.)
-      console.log("Uploading", file);
-
-      // After upload logic, trigger success toast
-      toast.success("Photo uploaded successfully!");
-
-      // Reset the file and preview after upload
-      setFile(null);
-      setPreview(null);
-    } else {
+  // Handle photo upload (Cloudinary + Firebase Auth)
+  const handleUpload = async () => {
+    if (!file) {
       toast.error("Please select a photo first.");
+      return;
+    }
+
+    let fileData = new FormData();
+    fileData.append("file", file);
+    fileData.append("upload_preset", "my-live-music-web");
+    fileData.append("cloud_name", "dzf0ggbrg");
+
+    try {
+      let response = await fetch(
+        "https://api.cloudinary.com/v1_1/dzf0ggbrg/image/upload",
+        {
+          method: "POST",
+          body: fileData,
+        }
+      );
+
+      let data = await response.json();
+
+      if (data.secure_url) {
+        const imageUrl = data.secure_url;
+        console.log("Uploaded Image URL:", imageUrl);
+
+        // Update Firebase Auth profile with the new photo URL
+        await updateProfile(authUser, { photoURL: imageUrl });
+
+        toast.success("Photo uploaded successfully!");
+        navigate("/user/profile/my-account");
+
+        // Reset after successful upload
+        setFile(null);
+        setPreview(null);
+      } else {
+        toast.error("Upload failed, please try again.");
+      }
+    } catch (error) {
+      console.error("Upload Error:", error);
+      toast.error("Something went wrong!");
     }
   };
 
@@ -53,6 +86,7 @@ const UploadProfilePhoto = () => {
         {/* File Input */}
         <input
           type="file"
+          accept="image/*"
           onChange={handleFileChange}
           className="block w-full text-sm text-gray-300
                     file:mr-4 file:py-2 file:px-4
