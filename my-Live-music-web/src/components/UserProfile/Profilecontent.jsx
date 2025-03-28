@@ -2,7 +2,7 @@ import React from 'react'
 
 const Profilecontent = () => {
   return (
-    <div>Profilecontent</div>
+    <div></div>
   )
 }
 

@@ -5,11 +5,13 @@ import Home from "../pages/Home";
 import Login from "../auth/login";
 import Register from "../auth/register";
 import ResetPassword from "../auth/ResetPassword";
-import Profilecontainer from "../components/UserProfile/Profilecontainer";
-
-
-
-
+import ProfileContainer from "../components/UserProfile/ProfileContainer"; // Fixed name
+import MyAccount from "../components/UserProfile/MyAccount";
+import AddProfile from "../components/UserProfile/AddProfile"; // Imported missing component
+import ChangePassword from "../components/UserProfile/ChangePassword"; // Imported missing component
+import Deleteaccount from "../components/UserProfile/DeleteAccount"; // Imported missing component
+import Settings from "../components/UserProfile/Settings"; // Imported missing component
+import Uploadprofilephoto from "../components/UserProfile/UploadProfilePhoto";
 
 
 let myRoutes = createBrowserRouter([
@@ -34,12 +36,34 @@ let myRoutes = createBrowserRouter([
         element: <ResetPassword />,
       },
       {
-        path: "/user/profile",
-        element:<Profilecontainer/>,
-      },
-      {
-        path: "*",
-        element: <h1>404! Page Not Found</h1>,
+        path: "/user/profile/",
+        element: <ProfileContainer />,
+        children: [
+          {
+            path: "/user/profile/my-account",
+            element: <MyAccount />,
+          },
+          {
+            path: "add-profile",
+            element: <AddProfile />,
+          },
+          {
+            path: "change-password",
+            element: <ChangePassword />,
+          },
+          {
+            path: "/user/profile/upload-profile-photo",
+            element: <Uploadprofilephoto />,
+          },
+          {
+            path: "/user/profile/delete",
+            element: <Deleteaccount />,
+          },
+          {
+            path: "settings",
+            element: <Settings />, // Added settings route
+          },
+        ],
       },
     ],
   },
