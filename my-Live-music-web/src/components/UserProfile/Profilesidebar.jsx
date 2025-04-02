@@ -15,7 +15,7 @@ const Profilesidebar = () => {
       {/* Scrollable Menu Items */}
       <div className="flex-1 overflow-y-auto p-4">
         <NavLink
-          to="/user/profile/my-account"
+          to="/user/profile"
           className={({ isActive }) =>
             `flex items-center space-x-3 p-3 rounded-lg font-bold transition-all ${
               isActive ? "bg-gray-600" : "hover:bg-gray-500"

@@ -1,11 +1,11 @@
 import React, { useContext } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { AuthUserContext } from "../../Context/AuthContextApi";
 import { signOut } from "firebase/auth";
 import { __AUTH } from "../../backend/Firebaseconfig";
 import toast from "react-hot-toast";
 import { FiLogOut } from "react-icons/fi";
 import { backendUserContext } from "../../Context/FetchUserContext";
+import { AuthUserContext } from "../../context/AuthContextApi";
 
 const Menu = () => {
   const { authUser } = useContext(AuthUserContext);
@@ -43,8 +43,8 @@ const Menu = () => {
         {/* Show Admin Panel Link for Authenticated Admin Users */}
         {authUser && role === "admin" && (
           <li>
-            <NavLink to="/admin/dashboard" className={linkStyle}>
-              Admin Panel
+            <NavLink to="/admin" className={linkStyle}>
+              Admin 
             </NavLink>
           </li>
         )}

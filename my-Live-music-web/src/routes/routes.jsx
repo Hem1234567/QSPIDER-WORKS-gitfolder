@@ -12,6 +12,10 @@ import ChangePassword from "../components/UserProfile/ChangePassword"; // Import
 import Deleteaccount from "../components/UserProfile/DeleteAccount"; // Imported missing component
 import Settings from "../components/UserProfile/Settings"; // Imported missing component
 import Uploadprofilephoto from "../components/UserProfile/UploadProfilePhoto";
+import Admincontainer from "../Admin/Admincontainer";
+import CreateAlbum from "../Admin/Album/CreateAlbum";
+
+
 
 
 let myRoutes = createBrowserRouter([
@@ -36,11 +40,21 @@ let myRoutes = createBrowserRouter([
         element: <ResetPassword />,
       },
       {
+        path: "/admin",
+        element: <Admincontainer />,
+        children: [
+          {
+            path: "create-album",
+            element: <CreateAlbum />,
+          },
+        ],
+      },
+      {
         path: "/user/profile/",
         element: <ProfileContainer />,
         children: [
           {
-            index:true,
+            index: true,
             element: <MyAccount />,
           },
           {

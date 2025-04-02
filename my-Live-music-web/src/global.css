@@ -2,4 +2,6 @@
 @import "tailwindcss";
 body{
      font-family: "Bree Serif", serif;
+     overflow-x: hidden;
+     overflow-y: auto;
 }
