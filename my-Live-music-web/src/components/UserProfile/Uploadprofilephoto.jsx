@@ -50,7 +50,7 @@ const UploadProfilePhoto = () => {
         await updateProfile(authUser, { photoURL: imageUrl });
 
         toast.success("Photo uploaded successfully!");
-        navigate("/user/profile/my-account");
+        navigate("/user/profile/");
 
         // Reset after successful upload
         setFile(null);

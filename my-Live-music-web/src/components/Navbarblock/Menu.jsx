@@ -5,10 +5,15 @@ import { signOut } from "firebase/auth";
 import { __AUTH } from "../../backend/Firebaseconfig";
 import toast from "react-hot-toast";
 import { FiLogOut } from "react-icons/fi";
+import { backendUserContext } from "../../Context/FetchUserContext";
 
 const Menu = () => {
   const { authUser } = useContext(AuthUserContext);
+  const { userData } = useContext(backendUserContext);
   const navigate = useNavigate();
+
+  // Extract role (default to empty if not found)
+  const role = userData?.role || "";
 
   const handleLogout = async () => {
     try {
@@ -35,23 +40,33 @@ const Menu = () => {
           </NavLink>
         </li>
 
+        {/* Show Admin Panel Link for Authenticated Admin Users */}
+        {authUser && role === "admin" && (
+          <li>
+            <NavLink to="/admin/dashboard" className={linkStyle}>
+              Admin Panel
+            </NavLink>
+          </li>
+        )}
+
         {authUser ? (
           <>
-            {/* Display Username and Profile Picture */}
+            {/* User Profile & Avatar */}
             <li>
-              <button className="flex items-center gap-2 px-3 py-2 rounded-md font-semibold text-white border border-transparent hover:bg-blue-800 transition-all">
-                <NavLink to="/user/profile" className="flex items-center gap-2">
-                  <span>{authUser.displayName || "User"}</span>
-                  <img
-                    src={
-                      authUser.photoURL ||
-                      "https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-260nw-1677509740.jpg"
-                    }
-                    alt="User Avatar"
-                    className="w-8 h-8 rounded-full border-2 border-white object-cover"
-                  />
-                </NavLink>
-              </button>
+              <NavLink
+                to="/user/profile"
+                className="flex items-center gap-2 px-3 py-2 rounded-md font-semibold text-white border border-transparent hover:bg-blue-800 transition-all"
+              >
+                <span>{authUser.displayName || "User"}</span>
+                <img
+                  src={
+                    authUser.photoURL ||
+                    "https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-260nw-1677509740.jpg"
+                  }
+                  alt="User Avatar"
+                  className="w-8 h-8 rounded-full border-2 border-white object-cover"
+                />
+              </NavLink>
             </li>
 
             {/* Logout Button */}

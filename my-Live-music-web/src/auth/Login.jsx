@@ -66,15 +66,12 @@ const Login = () => {
 
   return (
     <section className="flex items-center justify-center min-h-screen bg-gray-900 relative">
-      {/* Full-Screen Loading Overlay */}
-      {isLoading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50 z-50">
-          <Spinner />
-        </div>
-      )}
-
-      {/* Login Form */}
-      <article className="w-full max-w-md p-8 bg-gray-800 rounded-lg shadow-lg border-b-2 border-amber-50 relative z-10">
+      {/* Login Form with Background Blur when Loading */}
+      <article
+        className={`w-full max-w-md p-8 bg-gray-800 rounded-lg shadow-lg border-b-2 border-amber-50 relative z-10 transition ${
+          isLoading ? "blur-sm" : ""
+        }`}
+      >
         <header>
           <h2 className="text-2xl font-semibold text-center text-purple-400 mb-6">
             Login with Email
@@ -139,13 +136,13 @@ const Login = () => {
           {/* Reset Password */}
           <div className="flex justify-between mt-2 text-sm">
             <NavLink
-              to="/auth/forgot-password"
+              to="/auth/ResetPassword"
               className="hover:underline hover:text-purple-400 text-gray-200"
             >
               Forgotten Password?
             </NavLink>
             <NavLink
-              to="/auth/reset-password"
+              to="/auth/ResetPassword"
               className="hover:underline hover:text-purple-400 text-gray-200"
             >
               Reset Password
@@ -180,6 +177,11 @@ const Login = () => {
           </div>
         </form>
       </article>
+      {isLoading && (
+        <section className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+          <Spinner />
+        </section>
+      )}
     </section>
   );
 };

@@ -2,10 +2,13 @@ import React, { useContext, useState } from "react";
 import { FaUserXmark } from "react-icons/fa6";
 import { NavLink } from "react-router-dom";
 import { AuthUserContext } from "../../Context/AuthContextApi";
+import { backendUserContext } from "../../Context/FetchUserContext";
 
 const MyAccount = () => {
   // Destructure authUser from context
   let { authUser } = useContext(AuthUserContext);
+  let {userData} = useContext(backendUserContext);
+  console.log(userData);
 
   
 

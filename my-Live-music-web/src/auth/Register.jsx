@@ -4,6 +4,7 @@ import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { __AUTH } from "../backend/Firebaseconfig.js";
 import { NavLink, useNavigate } from "react-router-dom";
+import Spinner from "../Helper/Spinner.jsx"; // Import Spinner component
 
 const Register = () => {
   const navigate = useNavigate();
@@ -45,7 +46,7 @@ const Register = () => {
       await updateProfile(registeredUser.user, {
         displayName: username,
         photoURL:
-          "https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-260nw-1677509740.jpg", // Default profile picture
+          "https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-260nw-1677509740.jpg",
       });
 
       console.log("User Updated:", registeredUser.user);
@@ -66,8 +67,8 @@ const Register = () => {
   };
 
   return (
-    <section className="flex items-center justify-center min-h-screen bg-gray-900">
-      <article className="w-full max-w-md p-8 bg-gray-800 rounded-lg shadow-lg border-b-2 border-amber-50">
+    <section className="flex items-center justify-center min-h-screen bg-gray-900 relative">
+      <article className="w-full max-w-md p-8 bg-gray-800 rounded-lg shadow-lg border-b-2 border-amber-50 relative z-10">
         <header>
           <h1 className="text-3xl font-semibold text-center text-purple-400 mb-2">
             Register
@@ -169,6 +170,13 @@ const Register = () => {
           </div>
         </form>
       </article>
+
+      {/* Spinner Overlay */}
+      {isLoading && (
+        <section className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+          <Spinner />
+        </section>
+      )}
     </section>
   );
 };

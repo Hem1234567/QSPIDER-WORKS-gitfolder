@@ -40,7 +40,7 @@ let myRoutes = createBrowserRouter([
         element: <ProfileContainer />,
         children: [
           {
-            path: "/user/profile/my-account",
+            index:true,
             element: <MyAccount />,
           },
           {

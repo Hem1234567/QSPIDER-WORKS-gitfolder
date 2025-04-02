@@ -3,14 +3,15 @@ import { sendPasswordResetEmail } from "firebase/auth";
 import { __AUTH } from "../backend/Firebaseconfig.js";
 import toast from "react-hot-toast";
 import { NavLink, useNavigate } from "react-router-dom";
+import Spinner from "../Helper/Spinner.jsx"; // Import Spinner component
 
 const ResetPassword = () => {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const handleReset = async (e) => {
-    e.preventDefault(); 
+    e.preventDefault();
 
     if (!email.trim()) {
       toast.error("Please enter your email.");
@@ -21,8 +22,8 @@ const ResetPassword = () => {
     try {
       await sendPasswordResetEmail(__AUTH, email);
       toast.success(`Password reset link sent to ${email}`);
-      setEmail(""); 
-      setTimeout(() => navigate("/auth/login"), 2000); 
+      setEmail("");
+      setTimeout(() => navigate("/auth/login"), 2000);
     } catch (error) {
       toast.error(error.message);
     }
@@ -30,15 +31,13 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-900">
-      <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-96 border-b-2 border-white">
+    <div className="flex items-center justify-center min-h-screen bg-gray-900 relative">
+      <div className="bg-gray-800 p-6 rounded-lg shadow-lg w-96 border-b-2 border-white relative z-10">
         <h2 className="text-3xl font-bold text-purple-500 mb-6 text-center">
           Reset Password
         </h2>
 
         <form onSubmit={handleReset}>
-          {" "}
-          {}
           <label
             htmlFor="email"
             className="block text-white font-semibold mb-2"
@@ -81,6 +80,13 @@ const ResetPassword = () => {
           </button>
         </form>
       </div>
+
+      {/* Spinner Overlay */}
+      {isLoading && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
+          <Spinner />
+        </div>
+      )}
     </div>
   );
 };
