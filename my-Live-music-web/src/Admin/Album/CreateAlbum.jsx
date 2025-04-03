@@ -1,14 +1,11 @@
+import { addDoc, collection } from "firebase/firestore";
 import React, { useState } from "react";
-import { IoIosAddCircle, IoIosRemoveCircle } from "react-icons/io";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom";
-import { collection, addDoc } from "firebase/firestore";
-import { __DB } from "../../backend/Firebaseconfig.js"; // Import your Firebase configuration
+import { IoIosAddCircle, IoIosRemoveCircle } from "react-icons/io";
+import { __DB } from "../../backend/Firebaseconfig.js";
 
 const CreateAlbum = () => {
-  const navigate = useNavigate();
-
-  // Album state
+  // State for Album Details
   const [album, setAlbum] = useState({
     title: "",
     language: "",
@@ -16,13 +13,12 @@ const CreateAlbum = () => {
     description: "",
     releaseDate: "",
     releaseYear: "",
-    songsCount: "",
     starcast: "",
     director: "",
     thumbnail: null,
   });
 
-  // Song state
+  // State for Songs
   const [songs, setSongs] = useState([
     {
       title: "",
@@ -55,7 +51,7 @@ const CreateAlbum = () => {
     setSongs(updatedSongs);
   };
 
-  // Handle song file upload
+  // Handle song file uploads
   const handleSongFileChange = (index, e) => {
     const { name, files } = e.target;
     const updatedSongs = [...songs];
@@ -63,7 +59,7 @@ const CreateAlbum = () => {
     setSongs(updatedSongs);
   };
 
-  // Add a new song field
+  // Add new song form
   const addSong = () => {
     setSongs([
       ...songs,
@@ -78,84 +74,97 @@ const CreateAlbum = () => {
     ]);
   };
 
-  // Remove a song field
+  // Remove song form
   const removeSong = (index) => {
-    const updatedSongs = songs.filter((_, i) => i !== index);
-    setSongs(updatedSongs);
-  };
-
-  // Upload file to Cloudinary
-  const uploadToCloudinary = async (file, resourceType = "image") => {
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("upload_preset", "Music_web");
-    formData.append("cloud_name", "dzf0ggbrg");
-    formData.append("resource_type", resourceType);
-
-    try {
-      const response = await fetch(
-        `https://api.cloudinary.com/v1_1/dzf0ggbrg/${
-          resourceType === "image" ? "image" : "video"
-        }/upload`,
-        {
-          method: "POST",
-          body: formData,
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`Failed to upload ${resourceType}`);
-      }
-
-      const data = await response.json();
-      return data.secure_url;
-    } catch (error) {
-      console.error(`Error uploading ${resourceType}:`, error);
-      throw error;
+    if (songs.length > 1) {
+      const updatedSongs = songs.filter((_, i) => i !== index);
+      setSongs(updatedSongs);
     }
   };
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    // Validate required fields
-    if (!album.title || !album.thumbnail || songs.length === 0) {
-      toast.error("Please fill all required fields");
-      return;
-    }
-
-    // Validate each song has title and file
-    for (const song of songs) {
-      if (!song.title || !song.songFile) {
-        toast.error("Please fill all required song fields");
-        return;
-      }
-    }
-
     setIsLoading(true);
 
     try {
-      // 1. Upload album thumbnail
-      let uploadedAlbumThumbnailUrl = "";
-      if (album.thumbnail) {
-        uploadedAlbumThumbnailUrl = await uploadToCloudinary(album.thumbnail);
-        console.log("Album Thumbnail URL:", uploadedAlbumThumbnailUrl);
+      // Validate required fields
+      if (!album.title || !album.thumbnail) {
+        throw new Error("Album title and thumbnail are required");
       }
 
-      // 2. Upload songs and their thumbnails
+      if (songs.some((song) => !song.title || !song.songFile)) {
+        throw new Error("All songs must have a title and audio file");
+      }
+
+      // Upload album thumbnail
+      let albumThumbnailUrl = "";
+      if (album.thumbnail) {
+        const formData = new FormData();
+        formData.append("file", album.thumbnail);
+        formData.append("upload_preset", "Music_web");
+        formData.append("cloud_name", "dzf0ggbrg");
+
+        const response = await fetch(
+          "https://api.cloudinary.com/v1_1/dzf0ggbrg/image/upload",
+          { method: "POST", body: formData }
+        );
+
+        if (!response.ok) throw new Error("Album thumbnail upload failed");
+        const data = await response.json();
+        albumThumbnailUrl = data.secure_url;
+      }
+
+      // Upload songs
       const uploadedSongs = await Promise.all(
         songs.map(async (song) => {
-          // Upload song thumbnail if exists
           let songThumbnailUrl = "";
+          let songFileUrl = "";
+          let duration = "0:00";
+          let size = "0MB";
+
+          // Upload song thumbnail if exists
           if (song.thumbnail) {
-            songThumbnailUrl = await uploadToCloudinary(song.thumbnail);
+            const formData = new FormData();
+            formData.append("file", song.thumbnail);
+            formData.append("upload_preset", "Music_web");
+            formData.append("cloud_name", "dzf0ggbrg");
+
+            const response = await fetch(
+              "https://api.cloudinary.com/v1_1/dzf0ggbrg/image/upload",
+              { method: "POST", body: formData }
+            );
+
+            if (!response.ok) throw new Error("Song thumbnail upload failed");
+            const data = await response.json();
+            songThumbnailUrl = data.secure_url;
           }
 
-          // Upload song file
-          let songFileUrl = "";
-          if (song.songFile) {
-            songFileUrl = await uploadToCloudinary(song.songFile, "video");
+          // Upload song file (required)
+          const songFormData = new FormData();
+          songFormData.append("file", song.songFile);
+          songFormData.append("upload_preset", "Music_web");
+          songFormData.append("cloud_name", "dzf0ggbrg");
+          songFormData.append("resource_type", "video"); // For audio files
+
+          const response = await fetch(
+            "https://api.cloudinary.com/v1_1/dzf0ggbrg/upload",
+            { method: "POST", body: songFormData }
+          );
+
+          if (!response.ok) throw new Error("Song file upload failed");
+          const data = await response.json();
+          songFileUrl = data.secure_url;
+
+          // Calculate duration and size
+          if (data.duration) {
+            const seconds = Math.floor(data.duration);
+            duration = `${Math.floor(seconds / 60)}:${(seconds % 60)
+              .toString()
+              .padStart(2, "0")}`;
+          }
+          if (data.bytes) {
+            size = `${(data.bytes / (1024 * 1024)).toFixed(2)} MB`;
           }
 
           return {
@@ -163,43 +172,61 @@ const CreateAlbum = () => {
             singers: song.singers,
             lyricist: song.lyricist,
             musicDirector: song.musicDirector,
-            thumbnailUrl: songThumbnailUrl,
-            songFileUrl: songFileUrl,
-            duration: 0, // You might want to calculate this
-            plays: 0, // Initial play count
-            createdAt: new Date().toISOString(),
+            thumbnail: songThumbnailUrl,
+            file: songFileUrl,
+            duration,
+            size,
           };
         })
       );
 
-      // 3. Prepare album data for Firestore
-      const albumData = {
-        title: album.title,
-        language: album.language,
-        type: album.type,
-        description: album.description,
-        releaseDate: album.releaseDate,
-        releaseYear: album.releaseYear,
-        songsCount: songs.length,
-        starcast: album.starcast,
-        director: album.director,
-        thumbnailUrl: uploadedAlbumThumbnailUrl,
+      // Prepare Firestore document
+      const albumDoc = {
+        ...album,
+        thumbnail: albumThumbnailUrl,
         songs: uploadedSongs,
+        songsCount: songs.length,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        likes: 0, // Initial likes count
-        views: 0, // Initial views count
       };
 
-      // 4. Save to Firestore using your imported __DB
-      const docRef = await addDoc(collection(__DB, "albums"), albumData);
-      console.log("Album created with ID: ", docRef.id);
+      // Remove file objects before sending to Firestore
+      delete albumDoc.thumbnailFile;
+      uploadedSongs.forEach((song) => {
+        delete song.thumbnailFile;
+        delete song.songFile;
+      });
 
-      toast.success("Album added successfully!");
-      navigate("/albums"); // Redirect to albums page
+      // Add to Firestore
+      const albumCollection = collection(__DB, "music-albums");
+      await addDoc(albumCollection, albumDoc);
+
+      toast.success("Album created successfully!");
+      // Reset form after success
+      setAlbum({
+        title: "",
+        language: "",
+        type: "",
+        description: "",
+        releaseDate: "",
+        releaseYear: "",
+        starcast: "",
+        director: "",
+        thumbnail: null,
+      });
+      setSongs([
+        {
+          title: "",
+          singers: "",
+          lyricist: "",
+          musicDirector: "",
+          thumbnail: null,
+          songFile: null,
+        },
+      ]);
     } catch (error) {
       console.error("Error creating album:", error);
-      toast.error("Error creating album: " + error.message);
+      toast.error(error.message || "Failed to create album");
     } finally {
       setIsLoading(false);
     }
