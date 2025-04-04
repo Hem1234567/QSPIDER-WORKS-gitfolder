@@ -9,7 +9,7 @@ const Adminsidebar = () => {
         <ul className="w-full p-6">
           <li>
             <NavLink
-              to="create-album"
+              to="/admin"
               className={({ isActive }) =>
                 `px-4 py-2 flex items-center gap-2 hover:bg-blue-800 rounded-md cursor-pointer ${
                   isActive ? "bg-blue-800 text-white" : "text-gray-300"

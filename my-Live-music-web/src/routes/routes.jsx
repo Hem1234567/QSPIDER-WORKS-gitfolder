@@ -1,31 +1,44 @@
 import { createBrowserRouter } from "react-router-dom";
-import Navbarcontainer from "../components/Navbarblock/Navbarcontainer";
 import Layout from "../Layout";
 import Home from "../pages/Home";
 import Login from "../auth/login";
 import Register from "../auth/register";
 import ResetPassword from "../auth/ResetPassword";
-import ProfileContainer from "../components/UserProfile/ProfileContainer"; // Fixed name
+import ProfileContainer from "../components/UserProfile/ProfileContainer";
 import MyAccount from "../components/UserProfile/MyAccount";
-import AddProfile from "../components/UserProfile/AddProfile"; // Imported missing component
-import ChangePassword from "../components/UserProfile/ChangePassword"; // Imported missing component
-import Deleteaccount from "../components/UserProfile/DeleteAccount"; // Imported missing component
-import Settings from "../components/UserProfile/Settings"; // Imported missing component
+import AddProfile from "../components/UserProfile/AddProfile";
+import ChangePassword from "../components/UserProfile/ChangePassword";
+import Deleteaccount from "../components/UserProfile/DeleteAccount";
+import Settings from "../components/UserProfile/Settings";
 import Uploadprofilephoto from "../components/UserProfile/UploadProfilePhoto";
 import Admincontainer from "../Admin/Admincontainer";
 import CreateAlbum from "../Admin/Album/CreateAlbum";
+import AlbumlandingContainer from "../AlbumLanding/AlbumlandingContainer";
+import PopularAlbum from "../AlbumLanding/PopularAlbum";
+import AlbumDetails from "../AlbumLanding/AlbumDetails";
 
-
-
-
-let myRoutes = createBrowserRouter([
+const router = createBrowserRouter([
   {
     path: "/",
     element: <Layout />,
     children: [
       {
-        index: true,
-        element: <Home />,
+        path: "/",
+        element: <AlbumlandingContainer />,
+        children: [
+          {
+            index: true,
+            element: <PopularAlbum />,
+          },
+          {
+            path: "popular-album",
+            element: <PopularAlbum />,
+          },
+          {
+            path: "album-details/:albumTitle",
+            element: <AlbumDetails />,
+          },
+        ],
       },
       {
         path: "/auth/login",
@@ -36,7 +49,7 @@ let myRoutes = createBrowserRouter([
         element: <Register />,
       },
       {
-        path: "/auth/ResetPassword",
+        path: "/auth/reset-password",
         element: <ResetPassword />,
       },
       {
@@ -44,13 +57,13 @@ let myRoutes = createBrowserRouter([
         element: <Admincontainer />,
         children: [
           {
-            path: "create-album",
+            index: true,
             element: <CreateAlbum />,
           },
         ],
       },
       {
-        path: "/user/profile/",
+        path: "/user/profile",
         element: <ProfileContainer />,
         children: [
           {
@@ -66,16 +79,16 @@ let myRoutes = createBrowserRouter([
             element: <ChangePassword />,
           },
           {
-            path: "/user/profile/upload-profile-photo",
+            path: "upload-profile-photo",
             element: <Uploadprofilephoto />,
           },
           {
-            path: "/user/profile/delete",
+            path: "delete",
             element: <Deleteaccount />,
           },
           {
             path: "settings",
-            element: <Settings />, // Added settings route
+            element: <Settings />,
           },
         ],
       },
@@ -83,4 +96,4 @@ let myRoutes = createBrowserRouter([
   },
 ]);
 
-export default myRoutes;
+export default router;
